@@ -35,8 +35,6 @@ The following services are part of this repository
  - [ ] Complete / Enable use Nvidia GPUs on Plex container
  - [ ] Complete / Enable use AMD GPUs on Plex container
 
-## Containers usage
-
 ## Configure containers manually
 The following commands are used to build the Docker container with the latest versions available, and to deploy them manually.
 
