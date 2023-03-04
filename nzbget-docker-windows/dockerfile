@@ -1,0 +1,29 @@
+# escape=`
+
+# Update the container tag below with one that is supported by your Windows installation
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS build
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+RUN iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex;
+
+# Install latest version of Nzbget
+RUN choco install nzbget -y
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS final
+
+ARG build_folder="C:/Program Files/NzbGet/"
+ARG final_folder="C:/app"
+COPY --from=build $build_folder $final_folder
+
+EXPOSE 6789
+
+VOLUME [ "C:/ProgramData/NzbGet" ]
+VOLUME [ "C:/usenet"]
+WORKDIR C:\app
+
+# Set up NZBGet as a service
+RUN nzbget.exe -install
+
+# Launch NZBGet
+COPY run_me.bat "C:/app/"
+CMD run_me.bat

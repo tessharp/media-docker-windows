@@ -1,0 +1,23 @@
+# escape=`
+
+# Update the container tag below with one that is supported by your Windows installation
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS build
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+RUN iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex;
+
+# Install latest version of Lidarr
+RUN choco install lidarr -y
+
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8 AS final
+
+COPY --from=build C:\ProgramData\Lidarr C:\app
+
+EXPOSE 8686
+ 
+VOLUME [ "C:/config" ]
+VOLUME [ "C:/usenet"]
+WORKDIR C:\app\bin
+
+# Launch Lidarr
+CMD [ "Lidarr.Console.exe", "/data=C:\\config\\" ]

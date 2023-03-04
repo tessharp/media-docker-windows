@@ -1,0 +1,2 @@
+# Navidrome instructions
+Navidrome requires a configuration file (e.g. 'navidrome.toml'), which needs to be placed separately for archival/data retention. The folder 'configs' has a sample file that can be used. Place file in a directory where you intend to archive your Navidrome data.

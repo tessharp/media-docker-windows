@@ -1,0 +1,8 @@
+# This is just an example! Please see available options below to customize Navidrome to your needs
+LogLevel = 'info'
+ScanSchedule = '@every 1h'
+TranscodingCacheSize = '150MiB'
+MusicFolder = 'C:\Usenet\'
+DataFolder = 'C:\config\data'
+Spotify.ID = '<add here>'
+Spotify.Secret = '<add here>'

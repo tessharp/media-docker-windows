@@ -1,0 +1,43 @@
+# escape=`
+
+# Update the container tag below with one that is supported by your Windows installation
+FROM mcr.microsoft.com/windows/server:ltsc2022 AS final
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+RUN iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex;
+
+# Copy additional scripts
+COPY PlexSetup C:/PlexSetup
+WORKDIR C:/PlexSetup
+
+# Install Server Media Foundation package
+RUN Install-WindowsFeature Server-Media-Foundation
+
+# TODO: Install Nvidia drivers on container, and review use of CUDA framework / Display Driver if possible
+
+# Install .NET Framework Core
+# RUN DISM /Online /NoRestart /Enable-Feature /FeatureName:NetFx3ServerFeatures
+
+# Install NVidia CUDA and Display Driver
+#RUN choco feature enable -n allowGlobalConfirmation
+# RUN choco install cuda
+# RUN Start-Service -Name "PlugPlay"
+# RUN choco install nvidia-display-driver
+# RUN choco feature disable -n allowGlobalConfirmation
+
+# Install latest version of Plex and deploy initial configuration
+# Installation and Registry persistance from @dr1rrb - https://github.com/dr1rrb/docker-registry-sync and https://github.com/dr1rrb/docker-plex-win
+RUN choco install plexmediaserver -y
+RUN REG IMPORT Config.reg
+
+# Expose container port
+EXPOSE 1900/udp
+EXPOSE 32469/tcp
+EXPOSE 32400/tcp
+
+# Expose volume
+VOLUME [ "C:/Plex" ]
+VOLUME [ "C:/Usenet"]
+
+# Launch Plex
+CMD [ "Run.cmd" ]

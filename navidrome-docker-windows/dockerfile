@@ -1,0 +1,24 @@
+# escape=`
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS final
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+RUN iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex;
+
+# Latest git version install
+RUN choco install ffmpeg -y
+
+# Copy setup files
+COPY navidrome C:/app
+WORKDIR C:\app
+
+# Download latest release on Github
+RUN .\download-latest-release.ps1
+
+EXPOSE 4533
+
+VOLUME [ "C:/config" ]
+VOLUME [ "C:/usenet"]
+
+# Launch Navidrome
+CMD .\navidrome.exe --configfile "C:\\config\\navidrome.toml" 

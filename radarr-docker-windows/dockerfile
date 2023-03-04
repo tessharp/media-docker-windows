@@ -1,0 +1,23 @@
+# escape=`
+
+# Update the container tag below with one that is supported by your Windows installation
+FROM mcr.microsoft.com/windows/servercore:ltsc2019 AS build
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+RUN iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex;
+
+# Install latest version of Radarr
+RUN choco install radarr -y
+
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8 AS final
+
+COPY --from=build C:\ProgramData\Radarr C:\app
+
+EXPOSE 7878
+ 
+VOLUME [ "C:/config" ]
+VOLUME [ "C:/usenet"]
+WORKDIR C:\app\bin
+
+# Launch Radarr
+CMD [ "Radarr.Console.exe", "/data=C:\\config\\" ]
